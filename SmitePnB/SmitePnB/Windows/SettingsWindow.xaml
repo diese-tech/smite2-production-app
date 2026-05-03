@@ -9,20 +9,6 @@
         ResizeMode="NoResize"
         Loaded="Window_Loaded">
 
-    <Window.Resources>
-        <Style TargetType="TextBox">
-            <Setter Property="Background"  Value="{StaticResource ControlBg}"/>
-            <Setter Property="Foreground"  Value="{StaticResource TextPrimary}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
-            <Setter Property="Padding"     Value="4,2"/>
-        </Style>
-        <Style TargetType="ComboBox">
-            <Setter Property="Background"  Value="{StaticResource ControlBg}"/>
-            <Setter Property="Foreground"  Value="{StaticResource TextPrimary}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
-        </Style>
-    </Window.Resources>
-
     <DockPanel Margin="16">
 
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">

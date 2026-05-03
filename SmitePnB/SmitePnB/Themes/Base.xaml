@@ -80,17 +80,85 @@
         <Setter Property="CaretBrush"      Value="{StaticResource TextPrimary}"/>
     </Style>
 
-    <!-- ── ComboBox ──────────────────────────────────────────────────── -->
+    <!-- ── ComboBox (full ControlTemplate override) ─────────────────── -->
+    <!-- WPF's default template uses system-themed ToggleButton internals  -->
+    <!-- that ignore Background/Foreground setters, producing white fields  -->
+    <!-- with unreadable near-white text. A custom template is required.   -->
     <Style TargetType="ComboBox">
         <Setter Property="Background"      Value="{StaticResource InputBg}"/>
         <Setter Property="Foreground"      Value="{StaticResource TextPrimary}"/>
         <Setter Property="BorderBrush"     Value="{StaticResource GoldBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding"         Value="4,2"/>
+        <Setter Property="Cursor"          Value="Hand"/>
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ComboBox">
+                    <Grid>
+                        <!-- Closed-state border + selected item display -->
+                        <Border x:Name="MainBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="18"/>
+                                </Grid.ColumnDefinitions>
+                                <ContentPresenter Grid.Column="0"
+                                                  Content="{TemplateBinding SelectionBoxItem}"
+                                                  ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                                  IsHitTestVisible="False"
+                                                  Margin="{TemplateBinding Padding}"
+                                                  VerticalAlignment="Center"/>
+                                <!-- Dropdown arrow -->
+                                <Path Grid.Column="1"
+                                      Data="M 0 0 L 5 5 L 10 0 Z"
+                                      Fill="{TemplateBinding Foreground}"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+                        <!-- Invisible toggle to open/close -->
+                        <ToggleButton Focusable="False"
+                                      IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                      Background="Transparent"
+                                      BorderThickness="0"
+                                      ClickMode="Press"/>
+                        <!-- Dropdown popup -->
+                        <Popup x:Name="PART_Popup"
+                               AllowsTransparency="True"
+                               IsOpen="{TemplateBinding IsDropDownOpen}"
+                               Placement="Bottom"
+                               PopupAnimation="Slide"
+                               Focusable="False">
+                            <Border MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ComboBox}}"
+                                    MaxHeight="{TemplateBinding MaxDropDownHeight}"
+                                    Background="{StaticResource InputBg}"
+                                    BorderBrush="{StaticResource GoldBrush}"
+                                    BorderThickness="1">
+                                <ScrollViewer>
+                                    <ItemsPresenter/>
+                                </ScrollViewer>
+                            </Border>
+                        </Popup>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="MainBorder" Property="Background" Value="{StaticResource HoverBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsDropDownOpen" Value="True">
+                            <Setter TargetName="MainBorder" Property="Background" Value="{StaticResource HoverBrush}"/>
+                            <Setter TargetName="MainBorder" Property="BorderBrush" Value="{StaticResource GoldBright}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <!-- ── ComboBox dropdown items ───────────────────────────────────── -->
-    <!-- Without this the popup uses the system white background,        -->
-    <!-- making near-white TextPrimary text invisible.                   -->
     <Style TargetType="ComboBoxItem">
         <Setter Property="Background"   Value="{StaticResource InputBg}"/>
         <Setter Property="Foreground"   Value="{StaticResource TextPrimary}"/>
